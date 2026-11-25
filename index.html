@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>题目速查</title><meta name="description" content="输入题目前三个字，快速查询图片中标记的选项。支持手机和电脑。"><meta name="theme-color" content="#2563eb">
+  <style>
+    :root{color-scheme:light;--blue:#2563eb;--ink:#17243c;--muted:#64748b;--line:#e2e8f0}
+    *{box-sizing:border-box}body{margin:0;background:#f5f7fb;color:var(--ink);font:16px/1.65 "Microsoft YaHei","PingFang SC",sans-serif}
+    main{max-width:840px;margin:0 auto;padding:48px 22px 60px}header{margin-bottom:26px}.eyebrow{font-size:13px;color:var(--blue);letter-spacing:2px;font-weight:700}h1{margin:6px 0 10px;font-size:34px;line-height:1.3}header p{margin:0;color:var(--muted)}
+    .searchbox{background:white;border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:0 8px 32px #17243c06}label{display:block;font-weight:700;margin-bottom:10px}.input-row{display:flex;gap:10px}input{font:inherit;min-width:0;width:100%;border:2px solid #cbd5e1;border-radius:12px;padding:14px 16px;color:var(--ink);outline:none}input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2563eb16}button{cursor:pointer;font:inherit;border:1px solid var(--line);background:white;color:var(--ink);border-radius:10px;padding:9px 14px}button:hover{background:#eff6ff;border-color:#93c5fd}button:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}.clear{flex-shrink:0}.hint{font-size:13px;color:var(--muted);margin:11px 0 0}.examples{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:15px}.examples span{font-size:13px;color:var(--muted)}.examples button{padding:4px 10px;font-size:13px;background:#f8fafc}
+    .toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:24px 0 14px}.toolbar p{margin:0;font-size:14px;color:var(--muted)}.toolbar button{font-size:14px;white-space:nowrap}.notice{padding:12px 16px;margin-bottom:14px;background:#eff6ff;color:#1e40af;border-radius:10px;font-size:14px}.card{background:white;border:1px solid var(--line);border-radius:16px;padding:21px 23px;margin-bottom:14px}.meta{font-size:12px;color:var(--muted);display:flex;gap:9px;align-items:center}.type{color:#2563eb;background:#eff6ff;border-radius:5px;padding:1px 7px}h2{font-size:17px;font-weight:600;margin:9px 0 15px;line-height:1.75;overflow-wrap:anywhere}.answer-label{font-size:13px;color:var(--muted);margin-bottom:8px}.letters{font-size:25px;color:var(--blue);font-weight:800;letter-spacing:4px}.answers{padding:0;margin:0;list-style:none;display:grid;gap:9px}.answers li{display:flex;align-items:flex-start;gap:11px;background:#f0f6ff;border-radius:10px;padding:11px 13px;overflow-wrap:anywhere}.badge{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:29px;height:29px;border-radius:7px;background:var(--blue);color:white;font-weight:700;line-height:1}.empty{text-align:center;padding:42px 20px;color:var(--muted);border:1px dashed #cbd5e1;border-radius:16px}.empty strong{display:block;font-size:18px;color:var(--ink);margin-bottom:6px}footer{font-size:12px;color:var(--muted);margin-top:30px;text-align:center}
+    @media(max-width:520px){main{padding:27px 16px 40px}h1{font-size:29px}.searchbox{padding:17px}.card{padding:17px}.input-row{gap:7px}input{padding:12px}.toolbar{align-items:flex-start}.letters{font-size:23px}}
+  </style>
+</head>
+<body>
+<main>
+  <header><div class="eyebrow">题目速查 · <span id="total"></span>道题</div><h1>输入开头，找到选项</h1><p>输入题目前三个字，即时显示图片中蓝色选项的字母与内容。</p></header>
+  <section class="searchbox" aria-label="题目查询">
+    <label for="query">题目开头 / 关键词</label>
+    <div class="input-row"><input id="query" type="search" placeholder="例如：肠管壁" autocomplete="off" autofocus><button type="button" id="clear" class="clear">清空</button></div>
+    <p class="hint">忽略空格、标点及英文大小写；同一开头有多道题时会全部列出。也可输入更多文字缩小范围。</p>
+    <div class="examples"><span>试试看</span><button type="button" data-query="肠管壁">肠管壁</button><button type="button" data-query="疝修补">疝修补</button><button type="button" data-query="下列哪">下列哪</button><button type="button" data-query="Cha">Cha</button></div>
+  </section>
+  <div class="toolbar"><p id="status" role="status" aria-live="polite"></p><button type="button" id="show-all">浏览全部题目</button></div>
+  <div id="notice" class="notice" hidden></div>
+  <section id="results" aria-label="匹配结果"></section>
+  <footer>按本批图片的蓝色标记录入 · 题号对应图片顺序 · 手机、电脑均可查询</footer>
+</main>
+<script id="question-data" type="application/json">[
+  {"id":1,"question":"肠管壁疝嵌顿时易误诊的原因，下列哪项不正确：","answers":{"D":"嵌顿疝内容物为大网膜"}},
+  {"id":2,"question":"胃溃疡的临床手术标准不包括：","answers":{"A":"年龄超过45岁的溃疡病人"}},
+  {"id":3,"question":"面部“危险三角区”的危险在于：","answers":{"D":"颅内化脓性感染"}},
+  {"id":4,"question":"组织烧伤后的体液渗出，一般要持续到伤后：","answers":{"C":"36～48小时"}},
+  {"id":5,"question":"男，40岁，因塌方，右腰部被砸伤，伤后出现大量肉眼血尿，右肾区明显肿胀、压痛，皮下可见淤血斑，脉搏120次/min，B.P80/50mmHg。诊断是：","answers":{"A":"全层裂伤"}},
+  {"id":6,"question":"成人颅内压增高，较客观的指标是：","answers":{"A":"视神经乳头水肿"}},
+  {"id":7,"question":"男性，68岁，反复咳嗽半年，痰少，发现痰中带鲜红血丝2天，无明显发热和胸痛气急。半年来体重减轻3公斤，既往体健，吸烟20年×1包/天，查体：左锁骨上触及1.5×2cm淋巴结，右上肺听诊呼吸音减弱，胸片提示右上肺不张。诊断准确率最高的检查项目是：","answers":{"A":"纤支镜+活检"}},
+  {"id":8,"question":"疝修补术后病人时，下列正确的是：","answers":{"B":"及时处理大便秘结","C":"切口部位压沙袋","D":"术后3个月内避免重体力劳动","E":"咳嗽时注意保护切口"}},
+  {"id":9,"question":"以下哪些表现提示严重颅内压增高：","answers":{"A":"躁动","D":"意识淡漠","E":"颈项强直"}},
+  {"id":10,"question":"甲亢手术最危险的并发症是：","answers":{"D":"甲状腺危象"}},
+  {"id":11,"question":"血清碱性磷酸酶升高可见于：","answers":{"A":"肝癌","C":"骨肉瘤","E":"前列腺癌转移伴增生性骨反应"}},
+  {"id":12,"question":"胸外伤后，胸腔内出现不凝血的原因错误的是：","answers":{"B":"主要是凝血酶原减少","C":"腔静脉出血","E":"胸腔内渗出液稀释"}},
+  {"id":13,"question":"胃大部切除术后的并发症有：","answers":{"A":"术后梗阻","B":"十二指肠残端破裂","D":"胃肠吻合口破裂或瘘","E":"术后胃出血"}},
+  {"id":14,"question":"小脑幕切迹疝最典型的临床表现是：","answers":{"C":"头痛加剧，意识障碍，一侧瞳孔散大"}},
+  {"id":15,"question":"颅内压增高三主征包括","answers":{"B":"头痛、呕吐、视乳头水肿"}},
+  {"id":16,"question":"股骨粗隆间骨折按Tronzo-Evans分类，下列哪个是错误的：","answers":{"D":"Ⅰ型：逆转子间骨折，骨折无移位，为稳定性骨折"}},
+  {"id":17,"question":"高钾血症的心电图改变最不可能是：","answers":{"B":"U波"}},
+  {"id":18,"question":"前列腺增生最典型的临床表现是：","answers":{"A":"进行性排尿困难"}},
+  {"id":19,"question":"长期应用速尿易导致：","answers":{"C":"低氯性碱中毒"}},
+  {"id":20,"question":"直肠癌早期诊断的方法有：","answers":{"A":"大便潜血试验","B":"直肠指检","D":"详细询问病史","E":"直肠镜"}},
+  {"id":21,"question":"痈切开引流与一般脓肿的切开不同在于：","answers":{"D":"做“+”或“++”切口"}},
+  {"id":22,"question":"关于胆囊结石，下列叙述哪项正确：","answers":{"B":"多数病人有黄疸"}},
+  {"id":23,"question":"结肠癌最主要的转移途径是：","answers":{"D":"淋巴转移"}},
+  {"id":24,"question":"判断甲亢病情程度最重要指标：","answers":{"B":"脉率与脉压变化"}},
+  {"id":25,"question":"破伤风最早出现强烈收缩的肌肉是：","answers":{"A":"咀嚼肌"}},
+  {"id":26,"question":"有关结肠癌的描述，正确的是：","answers":{"B":"浸润型癌多发生在左半结肠，易引起肠腔狭窄"}},
+  {"id":27,"question":"下列关于急性化脓性腹膜炎描述：","answers":{"A":"直肠前窝饱满伴触痛","B":"体温开始可正常","C":"原发病不同，腹痛性质不同","D":"早期常有恶心、呕吐"}},
+  {"id":28,"question":"乳房的Cooper's韧带受累时可出现：","answers":{"C":"皮肤凹陷"}},
+  {"id":29,"question":"诊断泌尿系肿瘤出现远处转移下列哪种方法最好：","answers":{"C":"PET（正电子发射体层摄影）"}},
+  {"id":30,"question":"Charcot三联症包括：","answers":{"A":"腹痛、寒战高热、黄疸"}},
+  {"id":31,"question":"Calot三角由：","answers":{"D":"胆囊管、肝总管和肝下缘构成"}},
+  {"id":32,"question":"关于大面积严重烧伤早期处理，不正确的是：","answers":{"D":"大量口服盐水"}},
+  {"id":33,"question":"绞窄性腹股沟斜疝在行肠切除吻合术后应行：","answers":{"C":"疝囊高位结扎术"}},
+  {"id":34,"question":"急性阑尾炎最严重的并发症是：","answers":{"A":"门静脉炎"}},
+  {"id":35,"question":"引起急性胆囊炎最主要的病因是：","answers":{"A":"胆囊结石"}},
+  {"id":36,"question":"有关大面积烧伤休克期输液，下列那些是正确的：","answers":{"A":"有血红蛋白尿时，要碱化尿液","C":"胶、晶体液之比一般为0.5:1","E":"维持每小时尿量不少于30ml"}},
+  {"id":37,"question":"肩关节脱位后，出现的畸形为：","answers":{"A":"方肩畸形"}},
+  {"id":38,"question":"诊断急性阑尾炎最有意义的体征是：","answers":{"D":"右下腹固定压痛点"}},
+  {"id":39,"question":"诊断胆囊结石，首选的方法是：","answers":{"A":"B超检查"}},
+  {"id":40,"question":"下列哪项升高有助原发性肝癌的诊断：","answers":{"C":"AFP"}},
+  {"id":41,"question":"革兰染色阳性细菌脓毒症可能出现的临床表现有：","answers":{"A":"常有皮疹、腹泻呕吐","B":"稽留热或弛张热","C":"谵妄和昏迷多见","D":"休克出现较晚"}},
+  {"id":42,"question":"疑为乳腺癌时确诊的检查方法是：","answers":{"D":"细针穿刺细胞学检查"}},
+  {"id":43,"question":"高渗性缺水的诊断主要有：","answers":{"A":"红细胞计数、血红蛋白量、血细胞比容升","B":"尿比重高","E":"血钠>150 mmol/L"}},
+  {"id":44,"question":"腹部闭合性损伤患者，最有价值的症状体征是：","answers":{"C":"腹膜刺激征"}},
+  {"id":45,"question":"低钾与高钾血症相同的症状是：","answers":{"B":"乏力、软瘫"}},
+  {"id":46,"question":"细菌性肝脓肿的主要感染途径是：","answers":{"A":"肝动脉"}},
+  {"id":47,"question":"中心型肺癌最常见的早期症状是：","answers":{"B":"刺激性咳嗽血痰"}},
+  {"id":48,"question":"对颅内压增高进行代偿的最主要因素是：","answers":{"C":"脑脊液动力学改变"}},
+  {"id":49,"question":"幽门梗阻的病人，因长期呕吐常易发生：","answers":{"C":"低钾低氯性碱中毒"}},
+  {"id":50,"question":"下列哪一项对诊断尿路感染最有意义：","answers":{"A":"清洁中段尿培养细菌计数≥10⁵/ml"}}
+]
+</script>
+<script>
+  'use strict';
+  const QUESTIONS = JSON.parse(document.getElementById('question-data').textContent);
+  function normalize(value) { return String(value).normalize('NFKC').toLowerCase().replace(/[\p{P}\p{Z}\p{S}\s]/gu, ''); }
+  function findMatches(value) {
+    const key = normalize(value);
+    if (!key) return {kind:'empty',items:[]};
+    const starts = QUESTIONS.filter(item => normalize(item.question).startsWith(key));
+    if (starts.length) return {kind:'prefix',items:starts};
+    return {kind:'keyword',items:QUESTIONS.filter(item => normalize(item.question).includes(key))};
+  }
+  const query = document.getElementById('query');
+  const results = document.getElementById('results');
+  const status = document.getElementById('status');
+  const notice = document.getElementById('notice');
+  let browsing = false;
+  function element(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+  function makeCard(item) {
+    const card = element('article','card');
+    const meta = element('div','meta');
+    const entries = Object.entries(item.answers);
+    meta.append(element('span','',`图片 ${String(item.id).padStart(2,'0')}`),element('span','type',entries.length > 1 ? '多选' : '单选'));
+    card.append(meta,element('h2','',item.question));
+    const label = element('div','answer-label','选择 ');
+    label.append(element('span','letters',entries.map(([letter]) => letter).join('')));
+    card.append(label);
+    const list = element('ul','answers');
+    for (const [letter,text] of entries) {
+      const row = element('li');
+      row.append(element('span','badge',letter),element('span','',text));
+      list.append(row);
+    }
+    card.append(list);
+    return card;
+  }
+  function render() {
+    const match = browsing ? {kind:'all',items:QUESTIONS} : findMatches(query.value);
+    const items = match.items;
+    results.replaceChildren();
+    notice.hidden = true;
+    document.getElementById('show-all').textContent = browsing ? '返回查询' : '浏览全部题目';
+    if (match.kind === 'empty') {
+      status.textContent = `题库共 ${QUESTIONS.length} 道题`;
+      const empty = element('div','empty');
+      empty.append(element('strong','','输入题目前三个字'),element('span','','支持单选、多选；英文开头输入前三个字母即可。'));
+      results.append(empty);
+      return;
+    }
+    status.textContent = browsing ? `正在显示全部 ${items.length} 道题` : `找到 ${items.length} 道${match.kind === 'prefix' ? '开头匹配' : '关键词匹配'}的题目`;
+    if (!items.length) {
+      const empty = element('div','empty');
+      empty.append(element('strong','','没有找到匹配题目'),element('span','','请检查输入，或改用题干中的关键词。当前仅包含本批50道题。'));
+      results.append(empty);
+      return;
+    }
+    if (!browsing && items.length > 1) {
+      notice.textContent = `有 ${items.length} 道题符合输入，请核对题干，或继续输入更多文字。`;
+      notice.hidden = false;
+    }
+    for (const item of items) results.append(makeCard(item));
+  }
+  document.getElementById('total').textContent = QUESTIONS.length;
+  query.addEventListener('input',() => { browsing = false; render(); });
+  document.getElementById('clear').addEventListener('click',() => { query.value = ''; browsing = false; render(); query.focus(); });
+  document.getElementById('show-all').addEventListener('click',() => { browsing = !browsing; render(); });
+  document.querySelectorAll('[data-query]').forEach(button => button.addEventListener('click',() => { query.value = button.dataset.query; browsing = false; render(); query.focus(); }));
+  query.addEventListener('keydown',event => { if (event.key === 'Escape') { query.value = ''; browsing = false; render(); } });
+  render();
+</script>
+</body>
+</html>
+
